@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Variabel Konfigurasi
-INTERFACE="eth1"                   # Interface jaringan yang akan digunakan untuk DHCP
+INTERFACE="eth0"                   # Interface jaringan yang akan digunakan untuk DHCP
 DHCP_CONF="/etc/dhcp/dhcpd.conf"   # Lokasi file konfigurasi DHCP
-SUBNET="192.168.24.0"              # Subnet yang akan digunakan
+SUBNET="192.168.1.0"               # Subnet yang akan digunakan
 NETMASK="255.255.255.0"            # Netmask
-RANGE_START="192.168.24.2"        # IP pertama yang akan diberikan oleh DHCP
-RANGE_END="192.168.24.100"         # IP terakhir yang akan diberikan oleh DHCP
-ROUTER="192.168.24.1"              # Default Gateway
+RANGE_START="192.168.1.100"        # IP pertama yang akan diberikan oleh DHCP
+RANGE_END="192.168.1.200"          # IP terakhir yang akan diberikan oleh DHCP
+ROUTER="192.168.1.1"               # Default Gateway
 DNS_SERVERS="8.8.8.8, 8.8.4.4"     # DNS Server
 LEASE_TIME="600"                   # Waktu sewa IP dalam detik (misalnya 10 menit)
 
@@ -31,9 +31,6 @@ subnet $SUBNET netmask $NETMASK {
     default-lease-time $LEASE_TIME; # Waktu sewa default (dalam detik)
     max-lease-time 7200;            # Waktu sewa maksimum (dalam detik)
 }
-
-# Tentukan interface yang digunakan oleh DHCP Server
-interfacename $INTERFACE;
 EOL
 
 # 3. Tentukan interface yang akan digunakan oleh DHCP Server
