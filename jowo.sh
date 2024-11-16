@@ -49,6 +49,9 @@ subnet 192.168.22.0 netmask 255.255.255.0 {
 }
 EOF
 
+# Restart layanan DHCP
+sudo systemctl restart isc-dhcp-server
+
 cat <<EOF | sudo tee /etc/netplan/01-netcfg.yaml
 network:
   version: 2
