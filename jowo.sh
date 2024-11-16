@@ -30,11 +30,25 @@ sudo apt update
 sudo apt install sshpass -y
 sudo apt install -y isc-dhcp-server iptables iptables-persistent
 
-# 1. Konfigurasi VLAN nang Ubuntu Server
-echo "🔧 Ngawe VLAN nang Ubuntu... tenang lek, kabel iki tak upgrade dadi kapal Titanic sing ora karam! 😹"
-ip link add link eth1 name $VLAN_INTERFACE type vlan id $VLAN_ID
-ip addr add $IP_ADDR dev $VLAN_INTERFACE
-ip link set up dev $VLAN_INTERFACE
+# Pastikan interface fisik aktif
+echo "Memastikan interface fisik $PHYSICAL_INTERFACE aktif..."
+sudo ip link set $PHYSICAL_INTERFACE up
+
+# Membuat VLAN
+echo "Membuat VLAN $VLAN_INTERFACE..."
+sudo ip link add link $PHYSICAL_INTERFACE name $VLAN_INTERFACE type vlan id $VLAN_ID
+
+# Menambahkan IP Address ke VLAN
+echo "Menambahkan IP Address $IP_ADDR ke $VLAN_INTERFACE..."
+sudo ip addr add $IP_ADDR dev $VLAN_INTERFACE
+
+# Mengaktifkan interface VLAN
+echo "Mengaktifkan interface VLAN $VLAN_INTERFACE..."
+sudo ip link set up dev $VLAN_INTERFACE
+
+# Verifikasi
+echo "Konfigurasi selesai. Berikut detail interface VLAN:"
+ip addr show $VLAN_INTERFACE
 
 # 2. Konfigurasi DHCP Server
 echo "📡 Setting DHCP... IP kudu adil rek, ojok rebutan kayak lek dodolan cilok nang pasar! 😎"
