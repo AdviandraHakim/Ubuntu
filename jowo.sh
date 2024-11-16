@@ -2,6 +2,7 @@
 
 # Variabel Konfigurasi
 VLAN_INTERFACE="eth1.10"
+PHYSICAL_INTERFACE="eth1"
 VLAN_ID=10
 IP_ADDR="192.168.22.1/24"      # IP address kanggo interface VLAN nang Ubuntu
 DHCP_CONF="/etc/dhcp/dhcpd.conf"
