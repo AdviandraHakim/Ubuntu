@@ -56,7 +56,7 @@ echo "📡 Setting DHCP... IP kudu adil rek, ojok rebutan kayak lek dodolan cilo
 cat <<EOF | sudo tee $DHCP_CONF
 # Konfigurasi subnet kanggo VLAN 10
 subnet 192.168.22.0 netmask 255.255.255.0 {
-    range 192.168.22.10 192.168.22.100;
+    range 192.168.22.2 192.168.22.254;
     option routers 192.168.22.1;
     option subnet-mask 255.255.255.0;
     option domain-name-servers 8.8.8.8, 8.8.4.4;
