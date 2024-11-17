@@ -93,8 +93,7 @@ print_status() {
 echo -e "${CYAN}Memulai konfigurasi Cisco Switch...${RESET}"
 
 # Login ke Cisco Switch dan lakukan konfigurasi VLAN
-echo -e "${CYAN}Membuat VLAN $VLAN_ID ($VLAN_NAME) di Cisco Switch...${RESET}"
-sshpass -p "$PASSWORD_SWITCH" ssh -o StrictHostKeyChecking=no $USER_SWITCH@$SWITCH_IP <<EOF
+sshpass -p "password" ssh -t user@192.168.20.35
 enable
 configure terminal
 vlan $VLAN_ID
