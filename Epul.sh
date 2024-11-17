@@ -72,7 +72,7 @@ USER_SWITCH="root"             # Username SSH untuk Cisco Switch
 PASSWORD_SWITCH="root"         # Password untuk Cisco Switch
 VLAN_ID=10
 VLAN_NAME="Epul"
-INTERFACE="e0/1"               # Port yang digunakan di Cisco Switch
+INTERFACE="e0/0"               # Port yang digunakan di Cisco Switch
 
 # Warna untuk tampilan
 RED='\033[31m'
