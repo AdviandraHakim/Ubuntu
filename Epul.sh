@@ -74,26 +74,8 @@ VLAN_ID=10
 VLAN_NAME="Epul"
 INTERFACE="e0/0"               # Port yang digunakan di Cisco Switch
 
-# Warna untuk tampilan
-RED='\033[31m'
-GREEN='\033[32m'
-CYAN='\033[36m'
-RESET='\033[0m'
-
-# Fungsi untuk menampilkan pesan sukses atau gagal
-print_status() {
-  if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✔ Konfigurasi Cisco Switch berhasil!${RESET}"
-  else
-    echo -e "${RED}✘ Gagal mengonfigurasi Cisco Switch!${RESET}"
-    exit 1
-  fi
-}
-
-echo -e "${CYAN}Memulai konfigurasi Cisco Switch...${RESET}"
-
-# Login ke Cisco Switch dan lakukan konfigurasi VLAN
-sshpass -p "password" ssh -t user@192.168.20.35
+# Epul Pusing
+sshpass -p "$PASSWORD_SWITCH" ssh -o StrictHostKeyChecking=no $USER_SWITCH@$SWITCH_IP <<EOF
 enable
 configure terminal
 vlan $VLAN_ID
@@ -106,6 +88,3 @@ exit
 end
 write memory
 EOF
-
-# Cek status konfigurasi
-print_status
