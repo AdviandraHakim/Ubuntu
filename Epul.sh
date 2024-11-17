@@ -71,7 +71,11 @@ SWITCH_IP="192.168.20.10"       # IP Cisco
 USER_SWITCH="root"              # Username SSH 
 PASSWORD_SWITCH="root"          # Password kanggo Cisco Switch
 VLAN_ID=10
+PHYSICAL_INTERFACE="eth0"      
 
+# Aktifkan interface fisik
+echo "Mengaktifkan interface fisik $PHYSICAL_INTERFACE..."
+sudo ip link set $PHYSICAL_INTERFACE up || { echo "Gagal mengaktifkan $PHYSICAL_INTERFACE"; exit 1; }  
 sshpass -p "$PASSWORD_SWITCH" ssh -o StrictHostKeyChecking=no $USER_SWITCH@$SWITCH_IP <<EOF
 enable
 configure terminal
