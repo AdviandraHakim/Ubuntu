@@ -66,30 +66,47 @@ sudo apt install sshpass -y
 # Cisco
 # ============================================================
 
-# Konfigurasi Cisco
-SWITCH_IP="192.168.20.10"       # IP Cisco 
-USER_SWITCH="root"              # Username SSH 
-PASSWORD_SWITCH="root"          # Password kanggo Cisco Switch
+# Variabel Konfigurasi
+SWITCH_IP="192.168.20.35"       # IP Cisco Switch (diubah sesuai permintaan)
+USER_SWITCH="root"             # Username SSH untuk Cisco Switch
+PASSWORD_SWITCH="root"         # Password untuk Cisco Switch
 VLAN_ID=10
-PHYSICAL_INTERFACE="eth0"      
+VLAN_NAME="Epul"
+INTERFACE="e0/1"               # Port yang digunakan di Cisco Switch
 
-# Aktifkan interface fisik
-echo "Mengaktifkan interface fisik $PHYSICAL_INTERFACE..."
-sudo ip link set $PHYSICAL_INTERFACE up || { echo "Gagal mengaktifkan $PHYSICAL_INTERFACE"; exit 1; }  
+# Warna untuk tampilan
+RED='\033[31m'
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Fungsi untuk menampilkan pesan sukses atau gagal
+print_status() {
+  if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✔ Konfigurasi Cisco Switch berhasil!${RESET}"
+  else
+    echo -e "${RED}✘ Gagal mengonfigurasi Cisco Switch!${RESET}"
+    exit 1
+  fi
+}
+
+echo -e "${CYAN}Memulai konfigurasi Cisco Switch...${RESET}"
+
+# Login ke Cisco Switch dan lakukan konfigurasi VLAN
+echo -e "${CYAN}Membuat VLAN $VLAN_ID ($VLAN_NAME) di Cisco Switch...${RESET}"
 sshpass -p "$PASSWORD_SWITCH" ssh -o StrictHostKeyChecking=no $USER_SWITCH@$SWITCH_IP <<EOF
 enable
 configure terminal
 vlan $VLAN_ID
-name Epul
+name $VLAN_NAME
 exit
-interface e0/0
-switchport trunk encapsulation dot1q
-switchport mode trunk
-exit
-interface e0/1
+interface $INTERFACE
 switchport mode access
 switchport access vlan $VLAN_ID
 exit
 end
 write memory
 EOF
+
+# Cek status konfigurasi
+print_status
