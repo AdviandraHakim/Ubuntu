@@ -67,7 +67,7 @@ sudo apt install sshpass -y
 # ============================================================
 
 # Konfigurasi Cisco
-SWITCH_IP="192.168.22.35"       # IP Cisco 
+SWITCH_IP="192.168.20.35"       # IP Cisco 
 USER_SWITCH="root"              # Username SSH 
 PASSWORD_SWITCH="root"          # Password kanggo Cisco Switch
 VLAN_ID=10
