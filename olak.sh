@@ -71,12 +71,30 @@ subnet 192.168.22.0 netmask 255.255.255.0 {
 }
 EOF
 
-# Fixed IP assignment for specific clients based on MAC address
-  host client1 {
-    hardware ethernet 00:11:22:33:44:55; # Ganti dengan MAC address asli
-    fixed-address 192.168.22.10;
-  }
-EOF
+# Interface yang ingin dicek (ubah jika interface berbeda)
+INTERFACE="eth0"
+
+# Mendapatkan MAC address
+MAC_ADDRESS=$(ip link show $INTERFACE | awk '/ether/ {print $2}')
+
+# Mengecek apakah MAC address berhasil ditemukan
+if [ -z "$MAC_ADDRESS" ]; then
+    echo "MAC address untuk interface $INTERFACE tidak ditemukan!"
+    exit 1
+fi
+
+echo "MAC address untuk $INTERFACE adalah: $MAC_ADDRESS"
+
+# Menambahkan entri DHCP secara otomatis
+DHCP_CONFIG="/etc/dhcp/dhcpd.conf"
+PC_IP="192.168.22.50"  # IP statis untuk PC
+
+echo "Menambahkan entri ke file konfigurasi DHCP..."
+echo "" >> $DHCP_CONFIG
+echo "host fantasia {" >> $DHCP_CONFIG
+echo "    hardware ethernet $MAC_ADDRESS;" >> $DHCP_CONFIG
+echo "    fixed-address $PC_IP;" >> $DHCP_CONFIG
+echo "}" >> $DHCP_CONFIG
 
 # Tentukan interface DHCP
 echo "INTERFACESv4=\"eth1.10\"" > /etc/default/isc-dhcp-server
