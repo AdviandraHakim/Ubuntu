@@ -60,7 +60,7 @@ systemctl restart isc-dhcp-server
 
 # Ip forward
 sudo /etc/sysctl.conf
-net.ipv4.ip_forward=1
+echo net.ipv4.ip_forward=1
 
 # Masquerade 
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
