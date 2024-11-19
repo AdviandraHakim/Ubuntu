@@ -1,28 +1,32 @@
-# ===== Konfigurasi Cisco Switch =====
-echo -e "\033[0;32m=== Konfigurasi Switch Cisco ===\033[0m"
-SWITCH_IP="192.168.1.100"
-SWITCH_USER="admin"
-SWITCH_PASS="password"
-ACCESS_INTERFACE="FastEthernet0/1"
-TRUNK_INTERFACE="FastEthernet0/0"
-VLAN_ID=10
+# 2. Konfigurasi Switch Cisco
+echo "=== Konfigurasi Switch Cisco ==="
+sshpass -p 'password_switch' ssh -o StrictHostKeyChecking=no cisco@192.168.22.X << EOF
+enable
+configure terminal
 
-/usr/bin/expect <<EOF
-spawn ssh $SWITCH_USER@$SWITCH_IP
-expect "Password:" { send "$SWITCH_PASS\r" }
-expect ">" { send "enable\r" }
-expect "#" { send "configure terminal\r" }
-expect "(config)#" { send "vlan $VLAN_ID\r" }
-expect "(config-vlan)#" { send "exit\r" }
-expect "(config)#" { send "interface $ACCESS_INTERFACE\r" }
-expect "(config-if)#" { send "switchport mode access\r" }
-expect "(config-if)#" { send "switchport access vlan $VLAN_ID\r" }
-expect "(config-if)#" { send "exit\r" }
-expect "(config)#" { send "interface $TRUNK_INTERFACE\r" }
-expect "(config-if)#" { send "switchport mode trunk\r" }
-expect "(config-if)#" { send "switchport trunk allowed vlan $VLAN_ID\r" }
-expect "(config-if)#" { send "exit\r" }
-expect "(config)#" { send "end\r" }
-expect "#" { send "write memory\r" }
-expect "#" { send "exit\r" }
+# Buat VLAN 10
+vlan 10
+name VLAN10
+exit
+
+# Konfigurasi interface VLAN 10 untuk pengelolaan switch (IP untuk VLAN 10 di switch)
+interface vlan 10
+ip address 192.168.22.254 255.255.255.0  # IP untuk VLAN 10
+no shutdown
+exit
+
+# Konfigurasi port untuk VLAN 10 (port akses)
+interface e0/1
+switchport mode access
+switchport access vlan 10
+exit
+
+# Konfigurasi port trunk yang menghubungkan ke MikroTik
+interface e0/0
+switchport mode trunk
+exit
+
+# Simpan konfigurasi
+write memory
 EOF
+echo "=== Konfigurasi Switch Cisco Selesai ==="
