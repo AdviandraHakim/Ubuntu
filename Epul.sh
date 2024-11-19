@@ -26,22 +26,22 @@ network:
      id: 10
      link: eth1
      addresses:
-      - 192.168.20.1/24
+      - 192.168.22.1/24
 EOT
 netplan apply
 
-sudo apt install isc-dhcp-server
+sudo apt install isc-dhcp-server -y
 
 # Dhcp
 sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF
 # A slightly different configuration for an internal subnet.
-subnet 192.168.20.0 netmask 255.255.255.0 {
-  range 192.168.20.2 192.168.20.254;
+subnet 192.168.22.0 netmask 255.255.255.0 {
+  range 192.168.22.2 192.168.22.254;
   option domain-name-servers 8.8.8.8;
 #  option domain-name "internal.example.org";
   option subnet-mask 255.255.255.0;
-  option routers 192.168.20.1;
-  option broadcast-address 192.168.20.255;
+  option routers 192.168.22.1;
+  option broadcast-address 192.168.22.255;
   default-lease-time 600;
   max-lease-time 7200;
 }
@@ -57,34 +57,7 @@ net.ipv4.ip_forward=1
 
 # Masquerade 
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-sudo apt install iptables-persistent
+sudo apt install iptables-persistent -y
 
 #install sshpass
 sudo apt install sshpass -y
-
-# ============================================================
-# Cisco
-# ============================================================
-
-# Variabel Konfigurasi
-SWITCH_IP="192.168.20.35"       # IP Cisco Switch (diubah sesuai permintaan)
-USER_SWITCH="root"             # Username SSH untuk Cisco Switch
-PASSWORD_SWITCH="root"         # Password untuk Cisco Switch
-VLAN_ID=10
-VLAN_NAME="Epul"
-INTERFACE="e0/0"               # Port yang digunakan di Cisco Switch
-
-# Epul Pusing
-sshpass -p "$PASSWORD_SWITCH" ssh -o StrictHostKeyChecking=no $USER_SWITCH@$SWITCH_IP <<EOF
-enable
-configure terminal
-vlan $VLAN_ID
-name $VLAN_NAME
-exit
-interface $INTERFACE
-switchport mode access
-switchport access vlan $VLAN_ID
-exit
-end
-write memory
-EOF
