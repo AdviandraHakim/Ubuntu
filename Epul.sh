@@ -3,8 +3,6 @@
 # Otomasi Dimulai
 echo "Otomasi WaK"
 
-#install sshpass
-sudo apt install sshpass 
 
 # Repo Kartolo
 cat <<EOF | sudo tee /etc/apt/sources.list
@@ -16,6 +14,7 @@ deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted u
 EOF
 
 sudo apt update
+
 
 # Netplan Lamine Yamal
 cat <<EOT > /etc/netplan/01-netcfg.yaml
@@ -59,10 +58,12 @@ echo 'INTERFACESv4="eth1.10"' > /etc/default/isc-dhcp-server
 systemctl restart isc-dhcp-server
 
 # Ip forward
-sudo /etc/sysctl.conf
-echo net.ipv4.ip_forward=1
+sudo sed -i '/^#net.ipv4.ip_forward=1/s/^#//' /etc/sysctl.conf
+sudo sysctl -p
 
 # Masquerade 
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 sudo apt install iptables-persistent 
 
+#install sshpass
+sudo apt install sshpass 
