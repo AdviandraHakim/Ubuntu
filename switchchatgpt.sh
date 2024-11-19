@@ -1,32 +1,49 @@
-# 2. Konfigurasi Switch Cisco
-echo "=== Konfigurasi Switch Cisco ==="
-sshpass -p 'password_switch' ssh -o StrictHostKeyChecking=no cisco@192.168.22.X << EOF
+#!/bin/bash
+
+echo "=== Skrip Otomasi Konfigurasi Switch Cisco ==="
+
+# Variabel untuk koneksi dan konfigurasi
+SWITCH_IP="192.168.22.X"            # IP switch Cisco
+SWITCH_USER="cisco"                 # Username SSH switch
+SWITCH_PASSWORD="password_switch"   # Password SSH switch
+VLAN_ID=10                          # VLAN ID yang akan dikonfigurasi
+VLAN_NAME="VLAN10"                  # Nama VLAN
+VLAN_IP="192.168.22.254"            # IP VLAN untuk pengelolaan
+SUBNET_MASK="255.255.255.0"         # Subnet mask untuk VLAN
+ACCESS_PORT="e0/1"                  # Port akses yang terhubung ke perangkat VLAN 10
+TRUNK_PORT="e0/0"                   # Port trunk yang terhubung ke perangkat lain
+
+# Konfigurasi di switch
+echo "=== Memulai Konfigurasi ==="
+sshpass -p "$SWITCH_PASSWORD" ssh -o StrictHostKeyChecking=no $SWITCH_USER@$SWITCH_IP << EOF
 enable
 configure terminal
 
-# Buat VLAN 10
-vlan 10
-name VLAN10
+# Buat VLAN
+vlan $VLAN_ID
+name $VLAN_NAME
 exit
 
-# Konfigurasi interface VLAN 10 untuk pengelolaan switch (IP untuk VLAN 10 di switch)
-interface vlan 10
-ip address 192.168.22.254 255.255.255.0  # IP untuk VLAN 10
+# Konfigurasi interface VLAN untuk pengelolaan
+interface vlan $VLAN_ID
+ip address $VLAN_IP $SUBNET_MASK
 no shutdown
 exit
 
-# Konfigurasi port untuk VLAN 10 (port akses)
-interface e0/1
+# Konfigurasi port akses untuk VLAN
+interface $ACCESS_PORT
 switchport mode access
-switchport access vlan 10
+switchport access vlan $VLAN_ID
 exit
 
-# Konfigurasi port trunk yang menghubungkan ke MikroTik
-interface e0/0
+# Konfigurasi port trunk untuk VLAN
+interface $TRUNK_PORT
 switchport mode trunk
+switchport trunk allowed vlan $VLAN_ID
 exit
 
 # Simpan konfigurasi
 write memory
 EOF
+
 echo "=== Konfigurasi Switch Cisco Selesai ==="
