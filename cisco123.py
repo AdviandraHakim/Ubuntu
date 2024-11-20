@@ -1,52 +1,48 @@
+
 from netmiko import ConnectHandler, NetMikoTimeoutException, NetMikoAuthenticationException
 
-# Konfigurasi detail koneksi ke switch
+# Konfigurasi koneksi ke switch
 switch_config = {
     'device_type': 'cisco_ios',
-    'host': '192.168.22.1',         # Ganti dengan IP switch
-    'username': 'admin',            # Ganti dengan username
-    'password': 'adminpassword',    # Ganti dengan password
-    'secret': 'adminpassword',      # Password untuk mode enable
-    'port': 22,                     # Port SSH (default: 22)
+    'host': '192.168.22.1',  # Ganti dengan IP switch
+    'username': '',          # Biarkan kosong jika belum ada username
+    'password': '',          # Biarkan kosong jika belum ada password
+    'secret': '',            # Biarkan kosong jika belum ada enable password
+    'port': 22,              # Port default SSH
 }
 
-# Perintah konfigurasi VLAN
+# Perintah untuk mengaktifkan SSH secara otomatis
 config_commands = [
-    "vlan 10",
-    "name VLAN10",
-    "exit",
-    "interface vlan 10",
-    "ip address 192.168.22.254 255.255.255.0",
-    "no shutdown",
-    "exit",
-    "interface Ethernet0/1",
-    "switchport mode access",
-    "switchport access vlan 10",
-    "exit",
-    "interface Ethernet0/0",
-    "switchport mode trunk",
-    "switchport trunk allowed vlan 10",
-    "exit",
-    "write memory",
+    "hostname Switch1",                       # Ubah hostname
+    "ip domain-name example.com",             # Tentukan domain-name
+    "crypto key generate rsa modulus 1024",   # Buat kunci RSA
+    "ip ssh version 2",                       # Gunakan SSH versi 2
+    "username admin privilege 15 secret adminpassword",  # Buat user admin
+    "line vty 0 4",                           # Konfigurasi VTY untuk SSH
+    "transport input ssh",                    # Hanya izinkan SSH
+    "login local",                            # Gunakan username/password lokal
+    "exit",                                   # Keluar dari konfigurasi
+    "interface vlan 1",                       # Masukkan VLAN 1
+    "ip address 192.168.22.1 255.255.255.0",  # Atur IP VLAN untuk manajemen
+    "no shutdown",                            # Aktifkan interface VLAN
+    "write memory",                           # Simpan konfigurasi
 ]
 
-def configure_switch():
+def configure_ssh():
     try:
         print("Menghubungkan ke switch...")
         connection = ConnectHandler(**switch_config)
 
-        # Masuk ke mode privileged EXEC (enable mode)
+        # Masuk ke mode enable jika diperlukan
         connection.enable()
 
         print("Koneksi berhasil! Memulai konfigurasi...")
-        # Kirim setiap perintah konfigurasi
-        for command in config_commands:
-            print(f"Menjalankan: {command}")
-            output = connection.send_config_set([command])
-            print(output)
+        # Kirim perintah konfigurasi
+        output = connection.send_config_set(config_commands)
+        print(output)
 
         print("Konfigurasi selesai. Menyimpan konfigurasi...")
-        save_output = connection.send_command("write memory")
+        save_output = connection.save_config()
         print(save_output)
 
         connection.disconnect()
@@ -59,4 +55,4 @@ def configure_switch():
         print(f"Kesalahan lain: {e}")
 
 if __name__ == "__main__":
-    configure_switch()
+    configure_ssh()
