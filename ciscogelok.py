@@ -22,7 +22,7 @@ config_commands = [
     "login local",                            # Gunakan username/password lokal
     "exit",                                   # Keluar dari konfigurasi
     "interface vlan 1",                       # Masukkan VLAN 1
-    "ip address 192.168.22.1 255.255.255.0",  # Atur IP VLAN untuk manajemen
+    "ip address 192.168.20.1 255.255.255.0",  # Atur IP VLAN untuk manajemen
     "no shutdown",                            # Aktifkan interface VLAN
     "write memory",                           # Simpan konfigurasi
 ]
