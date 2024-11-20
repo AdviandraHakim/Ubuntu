@@ -3,7 +3,7 @@ from netmiko import ConnectHandler, NetMikoTimeoutException, NetMikoAuthenticati
 # Konfigurasi koneksi ke switch
 switch_config = {
     'device_type': 'cisco_ios',
-    'host': '192.168.22.1',  # Ganti dengan IP switch
+    'host': '192.168.20.1',  # Ganti dengan IP switch
     'username': '',          # Biarkan kosong jika belum ada username
     'password': '',          # Biarkan kosong jika belum ada password
     'secret': '',            # Biarkan kosong jika belum ada enable password
