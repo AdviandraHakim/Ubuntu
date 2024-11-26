@@ -4,7 +4,7 @@
 ROUTER_IP="192.168.195.134"
 TELNET_PORT=23
 USERNAME="admin"
-OLD_PASSWORD=""
+OLD_PASSWORD=""  # Ganti dengan password lama jika ada
 NEW_PASSWORD="123"
 
 # Perintah konfigurasi yang akan dijalankan di Mikrotik
@@ -47,7 +47,10 @@ expect {
 send "\r"
 
 # Jalankan perintah konfigurasi
-$(for cmd in "${CONFIG_COMMANDS[@]}"; do echo "send \"$cmd\r\""; done)
+foreach cmd in {${CONFIG_COMMANDS[@]}} {
+    send "$cmd\r"
+    expect ">"
+}
 
 # Selesai dan logout
 send "quit\r"
