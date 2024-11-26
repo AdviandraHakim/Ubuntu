@@ -16,7 +16,7 @@ EOF
 sudo apt update
 
 
-# Netplan Lamine Yamal
+# Netplan 
 cat <<EOT > /etc/netplan/01-netcfg.yaml
 network:
   version: 2
