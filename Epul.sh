@@ -70,6 +70,3 @@ sudo apt install sshpass
 
 #install 
 sudo pip install netmiko
-
-#install 
-sudo apt install python-pip
