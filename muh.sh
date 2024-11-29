@@ -69,7 +69,7 @@ network:
       id: 10
       link: eth1
       addresses:
-        - 192.168.20.1/24
+        - 192.168.22.1/24
 EOT
 sudo netplan apply
 
@@ -80,12 +80,12 @@ sudo apt install -y isc-dhcp-server
 # Konfigurasi DHCP Server
 show_progress
 sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF
-subnet 192.168.20.0 netmask 255.255.255.0 {
-  range 192.168.20.2 192.168.20.254;
+subnet 192.168.22.0 netmask 255.255.255.0 {
+  range 192.168.22.2 192.168.22.254;
   option domain-name-servers 8.8.8.8;
   option subnet-mask 255.255.255.0;
-  option routers 192.168.20.1;
-  option broadcast-address 192.168.20.255;
+  option routers 192.168.22.1;
+  option broadcast-address 192.168.22.255;
   default-lease-time 600;
   max-lease-time 7200;
 }
