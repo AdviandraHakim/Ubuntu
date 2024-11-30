@@ -1,8 +1,8 @@
 # Variabel Mikrotik
 MIKROTIK_IP="192.168.195.134"  # IP Mikrotik (dalam topologi: 192.168.A.X)
 MIKROTIK_PORT="30014"             # Port Telnet default (23)
-MIKROTIK_USER="admin"          # Username Mikrotik (default: admin)
-MIKROTIK_PASSWORD="password"   # Ganti dengan password Mikrotik Anda
+MIKROTIK_USER=""          # Username Mikrotik (default: admin)
+MIKROTIK_PASSWORD=""   # Ganti dengan password Mikrotik Anda
 
 # Perintah konfigurasi Mikrotik
 echo -e "\033[1;32mMengonfigurasi Mikrotik melalui Telnet...\033[0m"
