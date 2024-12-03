@@ -1,72 +1,70 @@
-#!/bin/sh
+#!/bin/bash
 
 apt install expect -y
 apt install telnet 
 
-MIKROTIK_USER="admin"
-MIKROTIK_PASS="123"
-MIKROTIK_IP="192.168.195.134"
-MIKROTIK_PORT="30014"
+# Variabel Mikrotik
+MIKROTIK_IP="192.168.195.134"  # IP Mikrotik (dalam topologi: 192.168.A.X)
+MIKROTIK_PORT="30014"             # Port Telnet default (23)
+MIKROTIK_USER="admin"          # Username Mikrotik (default: admin)
+MIKROTIK_PASSWORD=""   # Ganti dengan password Mikrotik Anda
+MIKROTIK_NEWS="12345"   # Ganti dengan password Mikrotik Anda
 
-expect << EOF
+# Perintah konfigurasi Mikrotik
+echo -e "\033[1;32mMengonfigurasi Mikrotik melalui Telnet...\033[0m"
+
+expect <<EOF
 spawn telnet $MIKROTIK_IP $MIKROTIK_PORT
-expect "login:"
+expect "Login:"
 send "$MIKROTIK_USER\r"
 expect "Password:"
-send "$MIKROTIK_PASS\r"
+send "$MIKROTIK_PASSWORD\r"
+
+# Jika diminta mengganti password
+expect {
+    "New password:" {
+        send "$MIKROTIK_NEWS\r"
+        expect "Retype new password:"
+        send "$MIKROTIK_NEWS\r"
+    }
+    ">" { }
+}
+
+# Konfigurasi Interface
 expect ">"
+send "/interface ethernet set [find default-name=ether1] name=eth1\r"
+expect ">"
+send "/interface ethernet set [find default-name=ether2] name=eth2\r"
 
-# konfigurasi
-send "/ip dhcp-server network add address=192.168.200.0/24 gateway=192.168.200.1 dns-server=8.8.8.8
-expect  ">"
+# Konfigurasi IP Address untuk eth1 dan eth2
+expect ">"
+send "/ip address add address=192.168.22.1/24 interface=eth1 comment=\"Ke VLAN\"\r"
+expect ">"
+send "/ip address add address=192.168.200.1/24 interface=eth2 comment=\"Jaringan Lokal\"\r"
 
-# dhcp server
-send "/ip pool add name=pooll range=192.168.200.1-192.168.200.254
-expect  ">"
+# Konfigurasi DHCP Client pada eth1 (untuk mendapatkan akses internet)
+expect ">"
+send "/ip dhcp-client add interface=eth1 disabled=no comment=\"DHCP ke ISP\"\r"
 
-# dhcp server nama
-send  "/ip dhcp-server add name=dhcp1 interface=ether2 address-pool=pooll disable=no
-expect  ">"
+# Konfigurasi NAT (Masquerade)
+expect ">"
+send "/ip firewall nat add chain=srcnat out-interface=eth1 action=masquerade comment=\"NAT Masquerade\"\r"
 
-# menambahkan ip
-send  "/ip add add address=192.168.22.2/24 interfabe=ether1 
-expect  ">"
+# Konfigurasi Routing (Default Gateway untuk eth1)
+expect "expert>"
+send "/ip route add dst-address=192.168.22.10/32 gateway=192.168.200.1\r"
 
-# routing
-send  "/ip route add gateway=192.168.22.1
-expect  ">"
+# Konfigurasi DHCP Server untuk jaringan lokal (192.168.200.0/24)
+expect ">"
+send "/ip pool add name=dhcp_pool ranges=192.168.200.2-192.168.200.254\r"
+expect ">"
+send "/ip dhcp-server add name=dhcp_local interface=eth2 address-pool=dhcp_pool disabled=no\r"
+expect ">"
+send "/ip dhcp-server network add address=192.168.200.0/24 gateway=192.168.200.1 dns-server=8.8.8.8 comment=\"DHCP untuk Local\"\r"
 
-# masquerade
-send  "/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
-expect  ">"
-
-# 1
-send  "/ip dhcp-server enable 0
-expect  ">"
-
-# 2
-send  "/ip dhcp-server net pr
-expect  ">"
-
-# 3
-send  "/ip dhcp-server set 0 address-pool=pooll
-expect  ">"
-
-# 4
-send  "/int pr
-expect  ">"
-
-# masquerade
-send  "/int en ether2
-expect  ">"
-
-# masquerade
-send  "/ip dhcp-server disable 0
-expect  ">"
-send  "/ip dhcp-server enable 0
-expect  ">"
-
-# Keluar dari MikroTik
-send "exit\r"
-expect eof
+# Keluar
+expect ">"
+send "quit\r"
 EOF
+
+echo -e "\033[1;32mKonfigurasi Mikrotik selesai melalui Telnet!\033[0m"
