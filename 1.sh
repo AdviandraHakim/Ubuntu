@@ -158,19 +158,6 @@ else
     success_message "Expect sudah terinstal"
 fi
 
-#!/bin/bash
-
-# Tambahkan rute hanya jika belum ada
-add_route_if_not_exists() {
-    local network=$1
-    local gateway=$2
-    if ip route show | grep -q "${network} via ${gateway}"; then
-        echo "Rute ${network} via ${gateway} sudah ada, tidak ditambahkan lagi."
-    else
-        ip route add "${network}" via "${gateway}" && echo "Rute ${network} via ${gateway} berhasil ditambahkan."
-    fi
-}
-
 # Tambahkan rute untuk jaringan 192.168.200.0/24 melalui 192.168.22.3
-add_route_if_not_exists "192.168.200.0/24" "192.168.22.3"
-add_route_if_not_exists "192.168.200.0/24" "192.168.22.3"
+ip route 192.168.200.0/24 via 192.168.22.3
+ip route 192.168.200.0/24 via 192.168.22.3
