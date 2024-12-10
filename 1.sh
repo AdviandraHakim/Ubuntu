@@ -22,7 +22,7 @@ echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
 echo ""
 
 # Variabel untuk progres
-PROGRES=("Menambahkan Repository Ban" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
+PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
          "Mengonfigurasi DHCP server" "Mengaktifkan IP Forwarding" "Mengonfigurasi Masquerade" \
          "Menginstal iptables-persistent" "Menyimpan konfigurasi iptables"  \
          "Membuat iptables NAT Service" "Menginstal Expect" "Konfigurasi Cisco" "Konfigurasi Mikrotik")
@@ -39,7 +39,7 @@ error_message() { echo -e "${RED}$1 gagal!${NC}"; exit 1; }
 # Otomasi Dimulai
 echo "Otomasi Dimulai"
 
-# Menambahkan Repository Ban
+# Menambahkan Repository Kymm
 echo -e "${GREEN}${PROGRES[0]}${NC}"
 REPO="http://kartolo.sby.datautama.net.id/ubuntu/"                                 
 if ! grep -q "$REPO" /etc/apt/sources.list; then
@@ -78,7 +78,17 @@ sudo netplan apply > /dev/null 2>&1 || error_message "Konfigurasi netplan"
 
 # Instalasi ISC DHCP Server
 echo -e "${GREEN}${PROGRES[3]}${NC}"
-sudo apt install -y isc-dhcp-server > /dev/null 2>&1 || error_message "Instalasi DHCP server"
+if ! dpkg -l | grep -q isc-dhcp-server; then
+    sudo apt update -y > /dev/null 2>&1 || error_message "Update sebelum instalasi DHCP server"
+    sudo apt install -y isc-dhcp-server > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        success_message "Instalasi ISC DHCP server"
+    else
+        error_message "Instalasi ISC DHCP server"
+    fi
+else
+    success_message "ISC DHCP server sudah terinstal"
+fi
 
 # Konfigurasi DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
@@ -91,6 +101,11 @@ subnet 192.168.22.0 netmask 255.255.255.0 {
   option broadcast-address 192.168.22.255;
   default-lease-time 600;
   max-lease-time 7200;
+
+  host kymm {
+    hardware ethernet 00:50:79:66:68:0f;  
+    fixed-address 192.168.22.10;
+  }
 }
 EOF
 echo 'INTERFACESv4="eth1.10"' | sudo tee /etc/default/isc-dhcp-server > /dev/null
@@ -142,3 +157,7 @@ if ! command -v expect > /dev/null; then
 else
     success_message "Expect sudah terinstal"
 fi
+
+# Ip routing 
+ip route add 192.168.200.0/24 via 192.168.22.3
+ip route add 192.168.200.0/24 via 192.168.22.3
