@@ -36,18 +36,14 @@ function show_progress {
 # Otomasi Dimulai
 echo "Otomasi Dimulai"
 
-# Menambahkan Repository Kartolo
-show_progress
-REPO="http://kartolo.sby.datautama.net.id/ubuntu/"
-if ! grep -q "$REPO" /etc/apt/sources.list; then
-  cat <<EOF | sudo tee /etc/apt/sources.list
+# Nambah Repositori Kartolo
+cat <<EOF | sudo tee /etc/apt/sources.list
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-security main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-backports main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted universe multiverse
 EOF
-fi
 
 # Update Paket
 show_progress
