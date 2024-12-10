@@ -52,10 +52,6 @@ deb ${REPO} focal-proposed main restricted universe multiverse
 EOF
 fi
 
-# Update Paket
-echo -e "${GREEN}${PROGRES[1]}${NC}"
-sudo apt update -y > /dev/null 2>&1 || error_message "Update paket"
-
 # Konfigurasi Netplan
 echo -e "${GREEN}${PROGRES[2]}${NC}"
 cat <<EOT | sudo tee /etc/netplan/01-netcfg.yaml > /dev/null
