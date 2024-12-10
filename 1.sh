@@ -52,6 +52,10 @@ deb ${REPO} focal-proposed main restricted universe multiverse
 EOF
 fi
 
+# Update Paket
+echo -e "${GREEN}${PROGRES[1]}${NC}"
+sudo apt update -y > /dev/null 2>&1 || error_message "Update paket"
+
 # Konfigurasi Netplan
 echo -e "${GREEN}${PROGRES[2]}${NC}"
 cat <<EOT | sudo tee /etc/netplan/01-netcfg.yaml > /dev/null
@@ -154,6 +158,19 @@ else
     success_message "Expect sudah terinstal"
 fi
 
-# Ip routing 
-ip route add 192.168.200.0/24 via 192.168.22.3
-ip route add 192.168.200.0/24 via 192.168.22.3
+#!/bin/bash
+
+# Tambahkan rute hanya jika belum ada
+add_route_if_not_exists() {
+    local network=$1
+    local gateway=$2
+    if ip route show | grep -q "${network} via ${gateway}"; then
+        echo "Rute ${network} via ${gateway} sudah ada, tidak ditambahkan lagi."
+    else
+        ip route add "${network}" via "${gateway}" && echo "Rute ${network} via ${gateway} berhasil ditambahkan."
+    fi
+}
+
+# Tambahkan rute untuk jaringan 192.168.200.0/24 melalui 192.168.22.3
+add_route_if_not_exists "192.168.200.0/24" "192.168.22.3"
+add_route_if_not_exists "192.168.200.0/24" "192.168.22.3"
