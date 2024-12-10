@@ -32,9 +32,6 @@ STEP=0
 GREEN='\033[1;32m'
 NC='\033[0m'
 
-# Otomasi Dimulai
-echo "Otomasi Dimulai"
-
 # Menambahkan Repository Ban
 REPO="http://kartolo.sby.datautama.net.id/ubuntu/"                                 
 if ! grep -q "$REPO" /etc/apt/sources.list; then
