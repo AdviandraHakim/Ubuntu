@@ -77,7 +77,17 @@ sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
 # Instalasi ISC DHCP Server
 echo -e "${GREEN}${PROGRES[3]}${NC}"
-sudo apt install -y isc-dhcp-server > /dev/null 2>&1 || error_message "${PROGRES[3]}"
+if ! dpkg -l | grep -q isc-dhcp-server; then
+    sudo apt update -y > /dev/null 2>&1 || error_message "Update sebelum instalasi DHCP server"
+    sudo apt install -y isc-dhcp-server > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        success_message "Instalasi ISC DHCP server"
+    else
+        error_message "Instalasi ISC DHCP server"
+    fi
+else
+    success_message "ISC DHCP server sudah terinstal"
+fi
 
 # Konfigurasi DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
@@ -130,5 +140,4 @@ else
 fi
 
 # Tambahkan rute untuk jaringan 192.168.200.0/24 melalui 192.168.22.3
-ip route add 192.168.200.0/24 via 192.168.22.3
 ip route add 192.168.200.0/24 via 192.168.22.3
