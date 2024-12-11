@@ -52,7 +52,7 @@ send "/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade\r
 
 # Konfigurasi Routing (Default Gateway untuk eth1)
 expect ">"
-send "/ip route add dst-address=192.168.200.0/24 gateway=192.168.22.1\r" }
+send "/ip route add dst-address=0.0.0.0/0 gateway=192.168.22.10\r"
 
 # Konfigurasi DHCP Server untuk jaringan lokal (192.168.200.0/24)
 expect ">"
