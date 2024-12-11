@@ -131,3 +131,5 @@ fi
 
 #Nambahin IP Route
 ip route add 192.168.200.0/24 via 192.168.22.2
+
+
