@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 # Konfigurasi Cisco
 echo -e "${GREEN}${PROGRES[10]}${NC}"
