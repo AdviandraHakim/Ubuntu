@@ -38,7 +38,7 @@ error_message() { echo -e "\033[1;31m$1 gagal!${NC}"; exit 1; }
 # Otomasi Dimulai
 echo "Otomasi Dimulai"
 
-# Menambahkan Repository Kymm
+# Menambahkan Repository Ban
 echo -e "${GREEN}${PROGRES[0]}${NC}"
 REPO="http://kartolo.sby.datautama.net.id/ubuntu/"                                 
 if ! grep -q "$REPO" /etc/apt/sources.list; then
@@ -77,17 +77,7 @@ sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
 # Instalasi ISC DHCP Server
 echo -e "${GREEN}${PROGRES[3]}${NC}"
-if ! dpkg -l | grep -q isc-dhcp-server; then
-    sudo apt update -y > /dev/null 2>&1 || error_message "Update sebelum instalasi DHCP server"
-    sudo apt install -y isc-dhcp-server > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        success_message "Instalasi ISC DHCP server"
-    else
-        error_message "Instalasi ISC DHCP server"
-    fi
-else
-    success_message "ISC DHCP server sudah terinstal"
-fi
+sudo apt install -y isc-dhcp-server > /dev/null 2>&1 || error_message "${PROGRES[3]}"
 
 # Konfigurasi DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
@@ -99,9 +89,9 @@ subnet 192.168.22.0 netmask 255.255.255.0 {
   option routers 192.168.22.1;
   option broadcast-address 192.168.22.255;
   default-lease-time 600;
-  max-lease-time 7200;
+  max-lease-time 7220;
 
-  host Kymm {
+  host Ban {
     hardware ethernet 00:50:79:66:68:0f;  
     fixed-address 192.168.22.10;
   }
@@ -139,5 +129,30 @@ else
     success_message "${PROGRES[9]} sudah terinstal"
 fi
 
-# Tambahkan rute untuk jaringan 192.168.200.0/24 melalui 192.168.22.3
-ip route add 192.168.200.0/24 via 192.168.22.3
+#Nambahin IP Route
+ip route add 192.168.200.0/24 via 192.168.22.2
+
+# Konfigurasi Cisco
+echo -e "${GREEN}${PROGRES[10]}${NC}"
+CISCO_IP="192.168.195.134"
+CISCO_PORT="30013"
+expect <<EOF > /dev/null 2>&1
+spawn telnet $CISCO_IP $CISCO_PORT
+set timeout 22
+
+expect ">" { send "enable\r" }
+expect "#" { send "configure terminal\r" }
+expect "(config)#" { send "interface Ethernet0/1\r" }
+expect "(config-if)#" { send "switchport mode access\r" }
+expect "(config-if)#" { send "switchport access vlan 10\r" }
+expect "(config-if)#" { send "no shutdown\r" }
+expect "(config-if)#" { send "exit\r" }
+expect "(config)#" { send "interface Ethernet0/0\r" }
+expect "(config-if)#" { send "switchport trunk encapsulation dot1q\r" }
+expect "(config-if)#" { send "switchport mode trunk\r" }
+expect "(config-if)#" { send "no shutdown\r" }
+expect "(config-if)#" { send "exit\r" }
+expect "(config)#" { send "exit\r" }
+expect "#" { send "exit\r" }
+expect eof
+EOF
