@@ -52,7 +52,7 @@ send "/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade\r
 expect ">"
 
 # Menambahkan Rute Default (Internet Gateway)
-send "/ip route add dst-address=0.0.0.0/0 gateway=192.168.22.10\r"
+send "/ip route add gateway=192.168.22.1\r"
 expect ">"
 
 # Menambahkan pool DHCP
