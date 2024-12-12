@@ -51,10 +51,6 @@ deb ${REPO} focal-proposed main restricted universe multiverse
 EOF
 fi
 
-# Update Paket
-echo -e "${GREEN}${PROGRES[1]}${NC}"
-sudo apt update -y > /dev/null 2>&1 || error_message "${PROGRES[1]}"
-
 # Konfigurasi Netplan
 echo -e "${GREEN}${PROGRES[2]}${NC}"
 cat <<EOT | sudo tee /etc/netplan/01-netcfg.yaml > /dev/null
@@ -77,7 +73,17 @@ sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
 # Instalasi ISC DHCP Server
 echo -e "${GREEN}${PROGRES[3]}${NC}"
-sudo apt install -y isc-dhcp-server > /dev/null 2>&1 || error_message "${PROGRES[3]}"
+if ! dpkg -l | grep -q isc-dhcp-server; then
+    sudo apt update -y > /dev/null 2>&1 || error_message "Update sebelum instalasi DHCP server"
+    sudo apt install -y isc-dhcp-server > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        success_message "Instalasi ISC DHCP server"
+    else
+        error_message "Instalasi ISC DHCP server"
+    fi
+else
+    success_message "ISC DHCP server sudah terinstal"
+fi
 
 # Konfigurasi DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
