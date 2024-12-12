@@ -37,7 +37,7 @@ error_message() { echo -e "${RED}$1 gagal!${NC}"; exit 1; }
 # Otomasi Dimulai
 echo "Otomasi Dimulai"
 
-# Menambahkan Repository Ban
+# Menambahkan Repository Kymm
 echo -e "${GREEN}${PROGRES[0]}${NC}"
 REPO="http://kartolo.sby.datautama.net.id/ubuntu/"
 if ! grep -q "$REPO" /etc/apt/sources.list; then
@@ -96,7 +96,7 @@ subnet 192.168.22.0 netmask 255.255.255.0 {
   default-lease-time 600;
   max-lease-time 7220;
 
-  host Ban {
+  host Kymm {
     hardware ethernet 00:50:79:66:68:0f;
     fixed-address 192.168.22.10;
   }
