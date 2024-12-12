@@ -73,16 +73,13 @@ sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
 # Instalasi ISC DHCP Server
 echo -e "${GREEN}${PROGRES[3]}${NC}"
-if ! dpkg -l | grep -q isc-dhcp-server; then
-    sudo apt update -y > /dev/null 2>&1 || error_message "Update sebelum instalasi DHCP server"
-    sudo apt install -y isc-dhcp-server > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        success_message "Instalasi ISC DHCP server"
-    else
-        error_message "Instalasi ISC DHCP server"
-    fi
+# Update repository dan perbaiki paket yang rusak
+sudo apt update -y > /dev/null 2>&1 || error_message "Update repository gagal"
+sudo apt --fix-broken install -y > /dev/null 2>&1 || error_message "Perbaikan paket gagal"
+if ! dpkg -l | grep -qw isc-dhcp-server; then
+    sudo apt install -y isc-dhcp-server > /dev/null 2>&1 || error_message "${PROGRES[3]}"
 else
-    success_message "ISC DHCP server sudah terinstal"
+    success_message "${PROGRES[3]} sudah terinstal"
 fi
 
 # Konfigurasi DHCP Server
