@@ -8,16 +8,16 @@
 clear
 
 # Menampilkan teks ASCII art secara manual
-echo "\n██   ██  █████  ██   ██ ██ ███    ███ ███████ ███████ "
+echo "██   ██  █████  ██   ██ ██ ███    ███ ███████ ███████ "
 echo "██   ██ ██   ██ ██  ██  ██ ████  ████    ███     ███  "
 echo "███████ ███████ █████   ██ ██ ████ ██   ███     ███   "
 echo "██   ██ ██   ██ ██  ██  ██ ██  ██  ██  ███     ███    "
 echo "██   ██ ██   ██ ██   ██ ██ ██      ██ ███████ ███████ "
-echo "\n"
+echo ""
 echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
 echo "|S|E|R|L|O|K| |T||A||K| |P|A|R|A|N|I|"
 echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
-echo "\n"
+echo ""
 
 # Variabel untuk progres
 PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
