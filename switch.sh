@@ -1,5 +1,4 @@
 # Konfigurasi Cisco
-echo -e "${GREEN}${PROGRES[10]}${NC}"
 CISCO_IP="192.168.195.134"
 CISCO_PORT="30013"
 expect <<EOF > /dev/null 2>&1
