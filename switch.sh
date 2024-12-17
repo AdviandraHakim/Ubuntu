@@ -1,11 +1,7 @@
-echo -e "${GREEN}${PROGRES[10]}${NC}"
 
-CISCO_IP="192.168.195.134"
-CISCO_PORT="30013"
 
-# Menambahkan log sederhana dengan echo
-expect <<EOF
-spawn telnet $CISCO_IP $CISCO_PORT
+# Mulai sesi telnet ke switch
+spawn telnet 192.168.195.134 30013
 set timeout 10
 
 # Masuk ke mode enable
