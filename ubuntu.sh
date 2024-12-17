@@ -145,7 +145,7 @@ CISCO_IP="192.168.195.134"
 CISCO_PORT="30013"
 expect <<EOF > /dev/null 2>&1
 spawn telnet $CISCO_IP $CISCO_PORT
-set timeout 22
+set timeout 60
 
 expect ">" { send "enable\r" }
 expect "#" { send "configure terminal\r" }
