@@ -1,4 +1,4 @@
-
+#!/usr/bin/expect
 
 # Mulai sesi telnet ke switch
 spawn telnet 192.168.195.134 30013
