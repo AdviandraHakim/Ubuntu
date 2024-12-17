@@ -14,8 +14,6 @@ echo "███████ ███████ █████   ██ █�
 echo "██   ██ ██   ██ ██  ██  ██ ██  ██  ██  ███     ███    "
 echo "██   ██ ██   ██ ██   ██ ██ ██      ██ ███████ ███████ "
 echo ""
-
-# Menampilkan teks tambahan
 echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
 echo "|S|E|R|L|O|K| |T||A||K| |P|A|R|A|N|I|"
 echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
@@ -25,22 +23,23 @@ echo ""
 PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
          "Mengonfigurasi DHCP server" "Mengaktifkan IP Forwarding" "Mengonfigurasi Masquerade" \
          "Menginstal iptables-persistent" "Menyimpan konfigurasi iptables"  \
-         "Membuat iptables NAT Service" "Menginstal Expect" "Konfigurasi Cisco" "Konfigurasi Mikrotik")
+         "Menginstal Expect" "Konfigurasi Cisco" "Konfigurasi Mikrotik")
 
 # Warna untuk output
 GREEN='\033[1;32m'
+RED='\033[1;31m'
 NC='\033[0m'
 
 # Fungsi untuk pesan sukses dan gagal
 success_message() { echo -e "${GREEN}$1 berhasil!${NC}"; }
-error_message() { echo -e "\033[1;31m$1 gagal!${NC}"; exit 1; }
+error_message() { echo -e "${RED}$1 gagal!${NC}"; exit 1; }
 
 # Otomasi Dimulai
 echo "Otomasi Dimulai"
 
-# Menambahkan Repository Ban
+# Menambahkan Repository Kymm
 echo -e "${GREEN}${PROGRES[0]}${NC}"
-REPO="http://kartolo.sby.datautama.net.id/ubuntu/"                                 
+REPO="http://kartolo.sby.datautama.net.id/ubuntu/"
 if ! grep -q "$REPO" /etc/apt/sources.list; then
     cat <<EOF | sudo tee /etc/apt/sources.list > /dev/null
 deb ${REPO} focal main restricted universe multiverse
@@ -50,6 +49,10 @@ deb ${REPO} focal-backports main restricted universe multiverse
 deb ${REPO} focal-proposed main restricted universe multiverse
 EOF
 fi
+
+# Update Paket
+echo -e "${GREEN}${PROGRES[1]}${NC}"
+sudo apt update -y > /dev/null 2>&1 || error_message "${PROGRES[1]}"
 
 # Konfigurasi Netplan
 echo -e "${GREEN}${PROGRES[2]}${NC}"
@@ -83,7 +86,7 @@ fi
 
 # Konfigurasi DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
-sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF > /dev/null
+sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF
 subnet 192.168.22.0 netmask 255.255.255.0 {
   range 192.168.22.2 192.168.22.254;
   option domain-name-servers 8.8.8.8;
@@ -93,8 +96,8 @@ subnet 192.168.22.0 netmask 255.255.255.0 {
   default-lease-time 600;
   max-lease-time 7220;
 
-  host Ban {
-    hardware ethernet 00:50:79:66:68:0f;  
+  host Kymm {
+    hardware ethernet 00:50:79:66:68:0f;
     fixed-address 192.168.22.10;
   }
 }
@@ -126,14 +129,16 @@ sudo sh -c "ip6tables-save > /etc/iptables/rules.v6" > /dev/null 2>&1 || error_m
 echo -e "${GREEN}${PROGRES[9]}${NC}"
 if ! command -v expect > /dev/null; then
     sudo apt install -y expect > /dev/null 2>&1 || error_message "${PROGRES[9]}"
-    success_message "${PROGRES[9]} berhasil"
 else
     success_message "${PROGRES[9]} sudah terinstal"
 fi
 
-#Nambahin IP Route
-ip route add 192.168.200.0/24 via 192.168.22.2
+# Menambahkan IP Route
+echo "Menambahkan IP Route"
+sudo ip route add 192.168.200.0/24 via 192.168.22.2 || success_message "IP Route sudah ada"
 
+# Selesai
+echo -e "${GREEN}Skrip selesai dengan sukses!${NC}"
 # Konfigurasi Cisco
 echo -e "${GREEN}${PROGRES[10]}${NC}"
 CISCO_IP="192.168.195.134"
