@@ -14,7 +14,7 @@ echo "| o || o ) V || || |"
 echo "|_n_||__/ \_/ |_||_|"
 
 # Variabel untuk progres
-PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
+PROGRES=("Menambahkan Repository" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
          "Mengonfigurasi DHCP server" "Mengaktifkan IP Forwarding" "Mengonfigurasi Masquerade" \
          "Menginstal iptables-persistent" "Menyimpan konfigurasi iptables"  \
          "Menginstal Expect" "Konfigurasi Cisco" "Konfigurasi Mikrotik")
