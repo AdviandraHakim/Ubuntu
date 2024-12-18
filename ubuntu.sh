@@ -8,16 +8,10 @@
 clear
 
 # Menampilkan teks ASCII art secara manual
-echo "██   ██  █████  ██   ██ ██ ███    ███ ███████ ███████ "
-echo "██   ██ ██   ██ ██  ██  ██ ████  ████    ███     ███  "
-echo "███████ ███████ █████   ██ ██ ████ ██   ███     ███   "
-echo "██   ██ ██   ██ ██  ██  ██ ██  ██  ██  ███     ███    "
-echo "██   ██ ██   ██ ██   ██ ██ ██      ██ ███████ ███████ "
-echo ""
-echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
-echo "|S|E|R|L|O|K| |T||A||K| |P|A|R|A|N|I|"
-echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
-echo ""
+echo "  _   __  _ _  _  _ "
+echo " / \ |  \| | || || |"
+echo "| o || o ) V || || |"
+echo "|_n_||__/ \_/ |_||_|"
 
 # Variabel untuk progres
 PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
@@ -70,7 +64,7 @@ network:
       id: 10
       link: eth1
       addresses:
-        - 192.168.22.1/24
+        - 192.168.24.1/24
 EOT
 sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
@@ -87,18 +81,18 @@ fi
 # Konfigurasi DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
 sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF
-subnet 192.168.22.0 netmask 255.255.255.0 {
-  range 192.168.22.2 192.168.22.254;
+subnet 192.168.24.0 netmask 255.255.255.0 {
+  range 192.168.24.2 192.168.24.254;
   option domain-name-servers 8.8.8.8;
   option subnet-mask 255.255.255.0;
-  option routers 192.168.22.1;
-  option broadcast-address 192.168.22.255;
+  option routers 192.168.24.1;
+  option broadcast-address 192.168.24.255;
   default-lease-time 600;
   max-lease-time 7220;
 
   host Kymm {
     hardware ethernet 00:50:79:66:68:0f;
-    fixed-address 192.168.22.10;
+    fixed-address 192.168.24.10;
   }
 }
 EOF
@@ -135,7 +129,7 @@ fi
 
 # Menambahkan IP Route
 echo "Menambahkan IP Route"
-sudo ip route add 192.168.200.0/24 via 192.168.22.2 || success_message "IP Route sudah ada"
+sudo ip route add 192.168.200.0/24 via 192.168.24.2 || success_message "IP Route sudah ada"
 
 # Selesai
 echo -e "${GREEN}Skrip selesai dengan sukses!${NC}"
