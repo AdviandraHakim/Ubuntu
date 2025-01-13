@@ -24,8 +24,6 @@ expect \"(config-if)#\"
 send \"switchport trunk encapsulation dot1q\r\"
 expect \"(config-if)#\"
 send \"switchport mode trunk\"
-expect \"(config-if)#\"
-send \"exit\r\"
 
 # Mengonfigurasi port akses VLAN 10 (kabel DHCP)
 send \"interface e0/1\r\"  
