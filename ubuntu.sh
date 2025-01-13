@@ -3,12 +3,16 @@
 # Membersihkan layar
 clear
 #menempelkan teks art secara manual
-echo "███████ ███████ ██████  ██ ██      "
-echo "██      ██      ██   ██ ██ ██      "
-echo "█████   █████   ██████  ██ ██      "
-echo "██      ██      ██   ██ ██ ██      "
-echo "██      ███████ ██   ██ ██ ███████ "
+
 echo ""
+echo "██████╗  █████╗ ███╗   ██╗ ██████╗  ██████╗  █████╗ "
+echo "██╔══██╗██╔══██╗████╗  ██║██╔════╝ ██╔════╝ ██╔══██╗"
+echo "██████╔╝███████║██╔██╗ ██║██║  ███╗██║  ███╗███████║"
+echo "██╔══██╗██╔══██║██║╚██╗██║██║   ██║██║   ██║██╔══██║"
+echo "██║  ██║██║  ██║██║ ╚████║╚██████╔╝╚██████╔╝██║  ██║"
+echo "╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝"
+echo ""                                             
+
 
 # Menampilkan teks tambahan
 echo "+-+-+-+ +-+-+-+-+ +-+ +-+-+-+-+-+-+-+"
@@ -66,7 +70,7 @@ network:
       id: 10
       link: eth1
       addresses:
-        - 192.168.12.1/24
+        - 192.168.30.1/24
 EOT
 sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
@@ -87,18 +91,18 @@ fi
 # Konfig DHCP Server
 echo -e "${GREEN}${PROGRES[4]}${NC}"
 sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF > /dev/null
-subnet 192.168.12.0 netmask 255.255.255.0 {
-  range 192.168.12.2 192.168.12.254;
+subnet 192.168.30.0 netmask 255.255.255.0 {
+  range 192.168.30.2 192.168.30.254;
   option domain-name-servers 8.8.8.8;
   option subnet-mask 255.255.255.0;
-  option routers 192.168.12.1;
-  option broadcast-address 192.168.12.255;
+  option routers 192.168.30.1;
+  option broadcast-address 192.168.30.255;
   default-lease-time 600;
   max-lease-time 7200;
 
   host fantasia{
-    hardware ethernet  00:50:79:66:68:1c;  
-    fixed-address 192.168.12.10;
+    hardware ethernet 00:50:79:66:68:0f;  
+    fixed-address 192.168.30.10;
   }
 }
 EOF
