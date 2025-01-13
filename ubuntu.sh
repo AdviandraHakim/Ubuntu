@@ -97,7 +97,7 @@ subnet 192.168.12.0 netmask 255.255.255.0 {
   max-lease-time 7200;
 
   host fantasia{
-    hardware ethernet 00:50:79:66:68:0f;  
+    hardware ethernet  00:50:79:66:68:1c;  
     fixed-address 192.168.12.10;
   }
 }
