@@ -1,44 +1,49 @@
 #!/bin/bash
 
-echo -e "${GREEN}${PROGRES[10]}${NC}"
-
-CISCO_IP="192.168.195.134"
+CISCO_IP="192.168.195.134"  # IP perangkat Cisco    
 CISCO_PORT="30013"
 
-# Menambahkan log untuk setiap langkah
-log_step() {
-    echo "[INFO] $1"
-}
-
-log_step "Memulai koneksi ke perangkat Cisco."
-expect <<EOF
+# Konfigurasi Cisco: VLAN, Trunking, dan Akses Port DHCP
+expect -c "
 spawn telnet $CISCO_IP $CISCO_PORT
-set timeout 10
+send \"enable\r\"
+expect \"#\"
+send \"configure terminal\r\"
+expect \"(config)#\"
 
-log_step "Masuk ke mode enable."
-expect ">" { send "enable\r" }
+# Membuat VLAN 10
+send \"vlan 10\r\"
+expect \"(config-vlan)#\"
+send \"name VLAN10\r\"
+expect \"(config-vlan)#\"
+send \"exit\r\"
 
-log_step "Masuk ke konfigurasi terminal."
-expect "#" { send "configure terminal\r" }
+# Mengonfigurasi interface trunk (port e0/0)
+send \"interface e0/0\r\"  
+expect \"(config-if)#\"
+send \"switchport trunk encapsulation dot1q\r\"
+expect \"(config-if)#\"
+send \"switchport mode trunk\"
+expect \"(config-if)#\"
+send \"exit\r\"
 
-log_step "Mengonfigurasi interface Ethernet0/1 sebagai access mode."
-expect "(config)#" { send "interface Ethernet0/1\r" }
-expect "(config-if)#" { send "switchport mode access\r" }
-expect "(config-if)#" { send "switchport access vlan 10\r" }
-expect "(config-if)#" { send "no shutdown\r" }
-expect "(config-if)#" { send "exit\r" }
+# Mengonfigurasi port akses VLAN 10 (kabel DHCP)
+send \"interface e0/1\r\"  
+expect \"(config-if)#\"
+send \"switchport mode access\r\"
+expect \"(config-if)#\"
+send \"switchport access vlan 10\r\"
+expect \"(config-if)#\"
+send \"exit\r\"
 
-log_step "Mengonfigurasi interface Ethernet0/0 sebagai trunk mode."
-expect "(config)#" { send "interface Ethernet0/0\r" }
-expect "(config-if)#" { send "switchport trunk encapsulation dot1q\r" }
-expect "(config-if)#" { send "switchport mode trunk\r" }
-expect "(config-if)#" { send "no shutdown\r" }
-expect "(config-if)#" { send "exit\r" }
-
-log_step "Menyelesaikan konfigurasi dan keluar."
-expect "(config)#" { send "exit\r" }
-expect "#" { send "exit\r" }
+# Menyimpan konfigurasi
+send \"end\r\"
+expect \"#\"
+send \"write memory\r\"
+expect \"#\"
+send \"exit\r\"
 expect eof
-EOF
+"
 
-log_step "Konfigurasi selesai."
+# Pesan selesai
+echo "[SUCCESS] VLAN 10 telah ditambahkan, trunking aktif, dan kabel DHCP dipindahkan ke VLAN 10."
