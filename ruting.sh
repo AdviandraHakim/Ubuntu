@@ -1,10 +1,8 @@
 #!/bin/bash
 
 # Variabel untuk progres
-PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Menginstal DHCP server" \
-         "Mengonfigurasi DHCP server" "Mengaktifkan IP Forwarding" "Mengonfigurasi Masquerade" \
-         "Menginstal iptables-persistent" "Menyimpan konfigurasi iptables"  \
-         "Menginstal Expect" "Mengonfigurasi SSH" "Konfigurasi Cisco" "Konfigurasi Mikrotik")
+PROGRES=("Menambahkan Repository Kymm" "Melakukan update paket" "Mengonfigurasi netplan" "Mengaktifkan IP Forwarding" "Mengonfigurasi Masquerade" \
+         "Menginstal iptables-persistent" "Menyimpan konfigurasi iptables"  "Menginstal Expect" "Mengonfigurasi SSH" "Konfigurasi Cisco" "Konfigurasi Mikrotik")
 
 # Warna untuk output
 GREEN='\033[1;32m'
@@ -52,52 +50,30 @@ network:
 EOT
 sudo netplan apply > /dev/null 2>&1 || error_message "${PROGRES[2]}"
 
-# Instalasi ISC DHCP Server
-echo -e "${GREEN}${PROGRES[3]}${NC}"
-sudo apt install -y isc-dhcp-server > /dev/null 2>&1 || error_message "${PROGRES[3]}"
-
-# Konfigurasi DHCP Server
-echo -e "${GREEN}${PROGRES[4]}${NC}"
-sudo bash -c 'cat > /etc/dhcp/dhcpd.conf' << EOF
-subnet 192.168.22.0 netmask 255.255.255.0 {
-  range 192.168.22.2 192.168.22.254;
-  option domain-name-servers 8.8.8.8;
-  option routers 192.168.22.1;
-  option broadcast-address 192.168.22.255;
-  default-lease-time 600;
-  max-lease-time 7200;
-  host Kymm {
-    hardware ethernet 00:50:79:66:68:0f;
-    fixed-address 192.168.22.10;
-  }
-}
-EOF
-sudo systemctl restart isc-dhcp-server > /dev/null 2>&1 || error_message "${PROGRES[4]}"
-
 # Aktifkan IP Forwarding
-echo -e "${GREEN}${PROGRES[5]}${NC}"
+echo -e "${GREEN}${PROGRES[3]}${NC}"
 sudo sed -i '/^#net.ipv4.ip_forward=1/s/^#//' /etc/sysctl.conf
-sudo sysctl -p > /dev/null 2>&1 || error_message "${PROGRES[5]}"
+sudo sysctl -p > /dev/null 2>&1 || error_message "${PROGRES[3]}"
 
 # Konfigurasi Masquerade dengan iptables
-echo -e "${GREEN}${PROGRES[6]}${NC}"
-sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE > /dev/null 2>&1 || error_message "${PROGRES[6]}"
+echo -e "${GREEN}${PROGRES[4]}${NC}"
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE > /dev/null 2>&1 || error_message "${PROGRES[4]}"
 
 # Instalasi iptables-persistent
-echo -e "${GREEN}${PROGRES[7]}${NC}"
-sudo apt install -y iptables-persistent > /dev/null 2>&1 || error_message "${PROGRES[7]}"
+echo -e "${GREEN}${PROGRES[5]}${NC}"
+sudo apt install -y iptables-persistent > /dev/null 2>&1 || error_message "${PROGRES[5]}"
 
 # Menyimpan Konfigurasi iptables
-echo -e "${GREEN}${PROGRES[8]}${NC}"
-sudo iptables-save > /etc/iptables/rules.v4 > /dev/null 2>&1 || error_message "${PROGRES[8]}"
+echo -e "${GREEN}${PROGRES[6]}${NC}"
+sudo iptables-save > /etc/iptables/rules.v4 > /dev/null 2>&1 || error_message "${PROGRES[6]}"
 
 # Instalasi Expect
-echo -e "${GREEN}${PROGRES[9]}${NC}"
-sudo apt install -y expect > /dev/null 2>&1 || error_message "${PROGRES[9]}"
+echo -e "${GREEN}${PROGRES[7]}${NC}"
+sudo apt install -y expect > /dev/null 2>&1 || error_message "${PROGRES[7]}"
 
 # Instalasi OpenSSH Server
-echo -e "${GREEN}${PROGRES[10]}${NC}"
-sudo apt install -y openssh-server > /dev/null 2>&1 || error_message "${PROGRES[10]}"
+echo -e "${GREEN}${PROGRES[8]}${NC}"
+sudo apt install -y openssh-server > /dev/null 2>&1 || error_message "${PROGRES[8]}"
 
 # Mengizinkan SSH melalui firewall
 sudo ufw allow 22/tcp > /dev/null 2>&1 || error_message "Firewall SSH"
@@ -110,7 +86,7 @@ sudo systemctl restart ssh > /dev/null 2>&1 || error_message "Memulai ulang SSH"
 
 # Menambahkan IP Route
 echo "Menambahkan IP Route"
-sudo ip route add 192.168.200.0/24 via 192.168.24.2 || success_message "IP Route sudah ada"
+sudo ip route add 10.10.10.0/24 via 192.168.22.1 || success_message "IP Route sudah ada"
 
 # Selesai
 echo -e "${GREEN}Skrip selesai dengan sukses!${NC}"
